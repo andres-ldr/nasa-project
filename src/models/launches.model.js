@@ -19,8 +19,8 @@ const launch = {
 
 savedLaunch(launch);
 
-function existsLaunchWithId(launchId) {
-  return launches.has(launchId);
+async function existsLaunchWithId(launchId) {
+  return await launchesdb.findOne({ flightNumber: launchId });
 }
 
 async function getLatestFlightNumber() {
@@ -56,7 +56,7 @@ async function savedLaunch(launch) {
 }
 
 async function scheduleNewLaunch(launch) {
-  const newFlightNumber = await getLatestFlightNumber() + 1;
+  const newFlightNumber = (await getLatestFlightNumber()) + 1;
   const newLaunch = Object.assign(launch, {
     success: true,
     upcoming: true,
@@ -66,11 +66,14 @@ async function scheduleNewLaunch(launch) {
   await savedLaunch(newLaunch);
 }
 
-function abortLaunchById(launchId) {
-  const aborted = launches.get(launchId);
-  aborted.upcoming = false;
-  aborted.success = false;
-  return aborted;
+async function abortLaunchById(launchId) {
+  const aborted = await launchesdb.updateOne(
+    {
+      flightNumber: launchId,
+    },
+    { upcoming: false, success: false }
+  );
+  return aborted.modifiedCount === 1;
 }
 
 module.exports = {
