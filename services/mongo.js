@@ -1,18 +1,17 @@
-const mongoose = require("mongoose");
-const MONGO_URL =
-  "mongodb+srv://andres:in1NpvaZZPqF15AG@nasacluster.6xxuvxx.mongodb.net/nasa?retryWrites=true&w=majority";
-
-mongoose.connection.once("open", () => {
-  console.log("MongoDB ready");
+const mongoose = require('mongoose');
+require('dotenv').config();
+const MONGO_URL = process.env.MONGO_URL;
+mongoose.connection.once('open', () => {
+  console.log('MongoDB ready');
 });
-mongoose.connection.on("error", (err) => {
+mongoose.connection.on('error', (err) => {
   console.error(err);
 });
 
-async function mongoConnect(params) {
+async function mongoConnect() {
   await mongoose.connect(MONGO_URL);
 }
-async function mongoDisconnect(params) {
+async function mongoDisconnect() {
   await mongoose.disconnect(MONGO_URL);
 }
 module.exports = { mongoConnect, mongoDisconnect };
